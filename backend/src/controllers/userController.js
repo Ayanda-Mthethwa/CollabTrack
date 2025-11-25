@@ -1,125 +1,117 @@
 import {
   addUser,
-  getUser,
+  getUsers,
   getUserByEmail,
-  getUserByUsername,
   updateUser,
   deleteUser,
-} from "../models/customerModel.js";
+} from "../models/UserModel.js";
 
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-
-// Create new customer
-export const createCustomer = async (req, res) => {
+// Register a new user
+export const registerUser = async (req, res) => {
   try {
-    const { username, email, first_name, last_name, hashedpassword,user_role } = req.body;
+    const { username, email, first_name, last_name, password, user_role } = req.body;
 
     // Hash the password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
 
-      const customer = await addUser(
-          username,
-          full_name,
-          last_name,
-          email,
-          hashedPassword,
-          user_role
+      const user = await addUser(
+        username,
+        email,
+        first_name,
+        last_name,
+        hashedPassword, 
+        user_role
     );
-    res.status(201).json(customer);
+    res.status(201).json(user);
   } catch (error) {
-    console.error("Error creating customer:", error);
-    res.status(500).json({ message: "Failed to create customer" });
+    console.error("Error registering user:", error);
+    res.status(500).json({ message: "Failed to register user" });
   }
 };
 
-// Get all customers
-export const fetchUsers = async (req, res) => {
+// Get all users
+export const getAllUsers = async (req, res) => {
   try {
-    const customers = await getUsers();
-    res.status(200).json(customers);
+    const users = await getUsers();
+    res.status(200).json(users);
   } catch (error) {
     console.error("Error fetching users:", error);
     res.status(500).json({ message: "Failed to fetch users" });
   }
 };
 
-// Get user by ID
-export const fetchUserById = async (req, res) => {
+// Get a single user by ID
+export const getUser = async (req, res) => {
   try {
-    const user = await getUserById(req.params.id);
+    const user = await getUserByEmail(req.params.email);
     if (!user)
-      return res.status(404).json({ message: "Customer not found" });
-    res.status(200).json(cust);
+      return res.status(404).json({ message: "User not found" });
+    res.status(200).json(user);
   } catch (error) {
-    console.error("Error fetching customer:", error);
-    res.status(500).json({ message: "Failed to fetch customer" });
+    console.error("Error fetching user:", error);
+    res.status(500).json({ message: "Failed to fetch user" });
   }
 };
 
-// Update customer
-export const modifyCustomer = async (req, res) => {
+// Update user
+export const updateUserProfile = async (req, res) => {
   try {
-    const { full_name, email, phone, address } = req.body;
-    const customer = await updateCustomer(
-      req.params.id,
-      full_name,
-      email,
-      phone,
-      address
-    );
-    if (!customer)
-      return res.status(404).json({ message: "Customer not found" });
-    res.status(200).json(customer);
+    // The model function expects an object with the fields to update
+    const user = await updateUser(req.params.id, req.body);
+    if (!user)
+      return res.status(404).json({ message: "User not found" });
+    res.status(200).json(user);
   } catch (error) {
-    console.error("Error updating customer:", error);
-    res.status(500).json({ message: "Failed to update customer" });
+    console.error("Error updating user:", error);
+    res.status(500).json({ message: "Failed to update user" });
   }
 };
 
-// Delete customer
-export const removeCustomer = async (req, res) => {
+// Delete user
+export const removeUser = async (req, res) => {
   try {
-    const customer = await deleteCustomer(req.params.id);
-    if (!customer)
-      return res.status(404).json({ message: "Customer not found" });
+    const user = await deleteUser(req.params.id);
+    // deleteUser in supabase v2 might not return the deleted row by default.
+    // A success response is often enough.
     res
       .status(200)
-      .json({ message: "Customer deleted successfully", customer });
+      .json({ message: "User deleted successfully" });
   } catch (error) {
-    console.error("Error deleting customer:", error);
-    res.status(500).json({ message: "Failed to delete customer" });
+    console.error("Error deleting user:", error);
+    res.status(500).json({ message: "Failed to delete user" });
   }
 };
 
-// Login customer
-export const loginCustomer = async (req, res) => {
+// Login user
+export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const customer = await getCustomerByEmail(email);
+    const user = await getUserByEmail(email);
 
-    if (!customer)
-      return res.status(404).json({ message: "Customer not found" });
+    if (!user)
+      return res.status(404).json({ message: "User not found" });
 
     // Compare password
-    const match = await bcrypt.compare(password, customer.password);
+    const match = await bcrypt.compare(password, user.password_hash);
     if (!match) return res.status(401).json({ message: "Invalid credentials" });
 
     // Generate JWT token
     const token = jwt.sign(
-      { id: customer.customer_id },
+      { id: user.id, user_role: user.user_role },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
     // Don't send the password back to the client
-    const { password: _, ...customerInfo } = customer;
+    const { password: _, ...userInfo } = user;
 
-    res.json({ message: "Login successful", customer: customerInfo, token });
+    res.json({ message: "Login successful", user: userInfo, token });
   } catch (error) {
-    console.error("Error logging in customer:", error);
+    console.error("Error logging in user:", error);
     res.status(500).json({ message: "Failed to log in" });
   }
 };

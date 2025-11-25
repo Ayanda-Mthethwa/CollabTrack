@@ -1,5 +1,5 @@
 // models/customerModel.js
-import { supabaseConnection } from "../config/db.js";
+import { supabase } from "../config/database.js";
 
 //Add a new user
 export const addUser = async (
@@ -7,7 +7,7 @@ export const addUser = async (
     email,
     first_name,
     last_name,
-    hashedPassword,
+    password_hash,
     user_role,
   
 ) => {
@@ -19,7 +19,7 @@ export const addUser = async (
         email,
         first_name,
         last_name,
-        hashedPassword,
+        password_hash,
         user_role,
       })
       .select("*")
@@ -28,7 +28,7 @@ export const addUser = async (
     if (error) throw error;
     return data;
   } catch (error) {
-    console.error("Error adding customer:", error);
+    console.error("Error adding user:", error);
     throw error;
   }
 };
@@ -44,16 +44,16 @@ export const getUsers = async () => {
     if (error) throw error;
     return data;
   } catch (error) {
-    console.error("Error fetching customers:", error);
+    console.error("Error fetching user:", error);
     throw error;
   }
 };
 
-//Get user by username
-export const getUserByUsername = async (id) => {
+//Get user by ID
+export const getUserById = async (id) => {
   try {
     const { data, error } = await supabase
-      .from("user")
+      .from("users")
       .select("*")
       .eq("id", id)
       .single();
@@ -61,16 +61,16 @@ export const getUserByUsername = async (id) => {
     if (error) throw error;
     return data;
   } catch (error) {
-    console.error("Error fetching customer by ID:", error);
+    console.error("Error fetching user by ID:", error);
     throw error;
   }
 };
 
 //Get user by Email
-export const getUseByEmail = async (email) => {
+export const getUserByEmail = async (email) => {
   try {
     const { data, error } = await supabase
-      .from("user")
+      .from("users")
       .select("*")
       .eq("email", email)
       .single();
@@ -78,7 +78,7 @@ export const getUseByEmail = async (email) => {
     if (error) throw error;
     return data;
   } catch (error) {
-    console.error("Error fetching customer by email:", error);
+    console.error("Error fetching user by email:", error);
     throw error;
   }
 };
@@ -101,7 +101,7 @@ export const updateUser = async (
     if (error) throw error;
     return data;
   } catch (error) {
-    console.error("Error updating customer:", error);
+    console.error("Error updating user:", error);
     throw error;
   }
 };
@@ -110,14 +110,14 @@ export const updateUser = async (
 export const deleteUser = async (id) => {
   try {
     const { data, error } = await supabase
-      .from("user")
+      .from("users")
       .delete()
       .eq("id", id);
 
     if (error) throw error;
     return data;
   } catch (error) {
-    console.error("Error deleting customer:", error);
+    console.error("Error deleting user:", error);
     throw error;
   }
 };

@@ -1,8 +1,8 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { supabaseConnection } from "./src/config/database.js";
-
+import userRoutes from "./src/routes/userRoutes.js";
+import projectRoutes from "./src/routes/projectsRoutes.js";
 
 dotenv.config();
 
@@ -12,16 +12,12 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Routes
+app.use("/api/users", userRoutes);
+app.use("/api/projects", projectRoutes);
 
-
-//Test route
-app.get("/", (req, res) => {
-  res.send("Server is running");
-});
 
 const startServer = async () => {
-  //Test the Supabase connection and wait for it to finish
-  await supabaseConnection();
 
   app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);

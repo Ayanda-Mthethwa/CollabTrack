@@ -7,9 +7,10 @@ const { SUPABASE_URL, SUPABASE_KEY } = process.env;
 //Create Supabase client
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-/**
- * Test connection and show first row of each table
- */
+
+
+
+ //Test connection and show first row of each table
 export const supabaseConnection = async () => {
   const tables = [
     "notification_logs",
