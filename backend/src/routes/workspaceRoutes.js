@@ -3,7 +3,7 @@ import express from 'express';
 const router = express.Router();
 import authMiddleware from '../middleware/authMiddleware.js';
 import * as workspaceController from '../controllers/workspaceController.js';
-import * as projectModel from '../models/projectModel.js';
+import * as projectModel from '../models/ProjectModel.js';
 
 // Get all workspaces for current user
 router.get('/', authMiddleware, workspaceController.getWorkspaces);
