@@ -1,5 +1,5 @@
 // backend/src/controllers/projectController.js
-import * as projectModel from '../models/projectModel.js';
+import * as projectModel from '../models/ProjectModel.js';
 import { supabase } from '../config/database.js';
 
 export const createProject = async (req, res) => {
