@@ -1,6 +1,6 @@
 // src/controllers/workspaceController.js
-import * as workspaceModel from '../models/workspaceModel.js';
-import * as projectModel from '../models/projectModel.js';
+import * as workspaceModel from '../models/WorkspaceModel.js';
+import * as projectModel from '../models/ProjectModel.js';
 
 export const getWorkspaces = async (req, res) => {
   try {
