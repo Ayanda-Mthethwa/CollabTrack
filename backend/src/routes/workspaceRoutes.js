@@ -1,18 +1,18 @@
 // src/routes/workspaceRoutes.js
 import express from 'express';
 const router = express.Router();
-import middleware from '../middleware/authMiddleware.js';
+import authMiddleware from '../middleware/authMiddleware.js';
 import * as workspaceController from '../controllers/workspaceController.js';
 import * as projectModel from '../models/projectModel.js';
 
 // Get all workspaces for current user
-router.get('/', middleware, workspaceController.getWorkspaces);
+router.get('/', authMiddleware, workspaceController.getWorkspaces);
 
 // Get workspace by ID
-router.get('/:id', middleware, workspaceController.getWorkspaceById);
+router.get('/:id', authMiddleware, workspaceController.getWorkspaceById);
 
 // Get projects for a workspace
-router.get('/:workspaceId/projects', middleware, async (req, res) => {
+router.get('/:workspaceId/projects', authMiddleware, async (req, res) => {
   try {
     const { workspaceId } = req.params;
     const projects = await projectModel.getProjectsByWorkspaceId(workspaceId);
@@ -24,15 +24,15 @@ router.get('/:workspaceId/projects', middleware, async (req, res) => {
 });
 
 // Create new workspace
-router.post('/', middleware, workspaceController.createWorkspace);
+router.post('/', authMiddleware, workspaceController.createWorkspace);
 
 // Update workspace
-router.put('/:id', middleware, workspaceController.updateWorkspace);
+router.put('/:id', authMiddleware, workspaceController.updateWorkspace);
 
 // Remove member from workspace
-router.delete('/:workspaceId/members/:userId', middleware, workspaceController.removeMemberFromWorkspace);
+router.delete('/:workspaceId/members/:userId', authMiddleware, workspaceController.removeMemberFromWorkspace);
 
 // Delete workspace
-router.delete('/:id', middleware, workspaceController.deleteWorkspace);
+router.delete('/:id', authMiddleware, workspaceController.deleteWorkspace);
 
 export default router;
